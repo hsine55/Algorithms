@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class GraphMinCut {
-	private static final String FILE_PATH = "minCut.txt";
+	private static final String FILE_PATH = "testFiles/minCut/minCut.txt";
 	private static Map<Integer, List<Integer>> adjLists = new HashMap<>();
 	private static final Random rand = new Random(); 
 	private static Graph graph = new Graph();
@@ -33,7 +33,7 @@ public class GraphMinCut {
 		    bufferedReader.close();
 		}
 		catch(Exception e){
-			System.out.println("Error while reading file line by line:" + e.getMessage());
+			System.out.println("Error while reading file line by line: " + e.getMessage());
 		}
 	}
 	
@@ -90,9 +90,7 @@ public class GraphMinCut {
 	public static int calculateMinCut() {
 		while(graph.getListOfVertices().size() > 2) {
 			Edge e = chooseRandomEdge();
-			//System.out.println("deleted edge " + e.toString());
 			contract(e);
-			//System.out.println("Remaining edges are : " + graph.getListOfEdges().toString());
 		}
 		return graph.getListOfEdges().size();
 	}
@@ -105,9 +103,9 @@ public class GraphMinCut {
 	
 	public static void main(String[] args) {
 		int n=1;
-		int minCut = 100000;
-		while(n<100) {
-			readGraphIntoAdjList();
+		long minCut = Long.MAX_VALUE;
+		readGraphIntoAdjList();
+		while(n<500) {
 			createGraph();
 			int currentCut = calculateMinCut(); 
 			if (currentCut < minCut) {
