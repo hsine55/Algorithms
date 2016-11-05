@@ -22,7 +22,7 @@ public class Permutations {
 		for(int i=start; i<inputArray.size(); i++) {
 			swap(start,i, inputArray);
 			generatePermutations(inputArray, start+1);
-			swap(i, start, inputArray); //backtrack
+			swap(i, start, inputArray); //reswap
 		}
 	}
 	
