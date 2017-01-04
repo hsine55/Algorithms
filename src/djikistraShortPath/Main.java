@@ -2,9 +2,11 @@ package djikistraShortPath;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 
 
 public class Main {
@@ -15,13 +17,60 @@ public class Main {
 	public static void main(String[] args) {
 		List<Integer> assignmentValues = Arrays.asList(7,37,59,82,99,115,133,165,188,197);
 		
-		Map<Integer, Integer> shortPaths = djikistra(graph, 1);
+		//withHeap
+		long startTimeWithHeap = System.currentTimeMillis();
+		Map<Integer, Integer> shortPaths = djikistraWithHeap(graph, 1);
+		long stopTimeWithHeap = System.currentTimeMillis();
+	    long elapsedTimeWithHeap = stopTimeWithHeap - startTimeWithHeap;
+	    System.out.println("Execution time of djikistra with heap implementation = " + elapsedTimeWithHeap + " ms");
+		for(Integer assValue : assignmentValues) {
+				System.out.print(shortPaths.get(assValue)+",");
+		}
+		
+		//WithoutHeap
+		long startTimeWithoutHeap = System.currentTimeMillis();
+		shortPaths = djikistraWithoutHeap(graph, 1);
+		long stopTimeWithoutHeap = System.currentTimeMillis();
+	    long elapsedTimeWithoutHeap = stopTimeWithoutHeap - startTimeWithoutHeap;
+	    System.out.println();
+	    System.out.println("Execution time of djikistra with naive implementation = " + elapsedTimeWithoutHeap + " ms");
 		for(Integer assValue : assignmentValues) {
 				System.out.print(shortPaths.get(assValue)+",");
 		}
 	}
 	
-	private static Map<Integer, Integer> djikistra(Graph graph, Integer sourceVertexLabel) {
+	private static Map<Integer, Integer> djikistraWithHeap(Graph graph, Integer sourceVertexLabel) {
+		List<Vertex> visitedVertices = new ArrayList<>();
+		Map<Integer, Integer> shortPaths = new HashMap<>();
+		Vertex sourceVertex = graph.getVertex(sourceVertexLabel);
+		visitedVertices.add(sourceVertex);
+		initializeShortPaths(sourceVertex, shortPaths);
+		PriorityQueue<Vertex> minimums = new PriorityQueue<>((Vertex v1,Vertex v2) -> v1.getGreedyScore() - v2.getGreedyScore());
+		initializeGreedyScores(sourceVertex, graph.listOfVertices.values(), minimums);
+		
+		while(visitedVertices.size() < graph.listOfVertices.values().size()) {
+			Vertex chosenVertex = minimums.poll();
+			
+			for (Edge e : chosenVertex.getIncidentEdges()) {
+					Vertex adjacentVertex = e.getOppositePoint(chosenVertex);
+					if(!visitedVertices.contains(e.getOppositePoint(chosenVertex))) {
+						int oldGreedyScore = adjacentVertex.getGreedyScore();
+						int newGreedyScore = chosenVertex.getGreedyScore() + e.getWeigh();
+						if (newGreedyScore < oldGreedyScore) {
+							 adjacentVertex.setGreedyScore(newGreedyScore);
+							 minimums.remove(adjacentVertex);
+							 minimums.add(adjacentVertex);
+						}
+					}
+			}
+			shortPaths.put(chosenVertex.getLabel(), chosenVertex.getGreedyScore());
+			visitedVertices.add(chosenVertex);
+		}
+		return shortPaths;
+			
+	}
+	
+	private static Map<Integer, Integer> djikistraWithoutHeap(Graph graph, Integer sourceVertexLabel) {
 		List<Vertex> visitedVertices = new ArrayList<>();
 		Map<Integer, Integer> shortPaths = new HashMap<>();
 		Vertex sourceVertex = graph.getVertex(sourceVertexLabel);
@@ -55,6 +104,19 @@ public class Main {
 		for (Vertex v : graph.getListOfVertices().values()) {
 			if (v.getLabel() == sourceVertex.getLabel()) continue;
 			shortPaths.put(v.getLabel(), 1000000);
+		}
+	}
+	
+	private static void initializeGreedyScores(Vertex sourceVertex, Collection<Vertex> collection, PriorityQueue minimums) {
+		for (Vertex v : collection) {
+			if (v.getLabel() == sourceVertex.getLabel()) continue;
+			Edge e = v.getEdgeTo(sourceVertex);
+			if (e != null) {
+				v.setGreedyScore(e.getWeigh());
+			} else {
+				v.setGreedyScore(1000000);
+			}
+			minimums.add(v);
 		}
 	}
 	

@@ -44,7 +44,6 @@ public class Utils {
 			Edge e = new Edge(edgeWeight, currentVertex, adjacentVertex);
 			currentVertex.addIncidentEdge(e);
 			adjacentVertex.addIncidentEdge(e);
-			System.out.println(e.toString());
 		}
 	}
 

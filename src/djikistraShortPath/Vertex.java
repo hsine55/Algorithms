@@ -9,7 +9,16 @@ public class Vertex {
 	
 	private Integer label;
 	private List<Edge> incidentEdges = new ArrayList<Edge>();
+	private int greedyScore;
 	
+	public int getGreedyScore() {
+		return greedyScore;
+	}
+
+	public void setGreedyScore(int greedyScore) {
+		this.greedyScore = greedyScore;
+	}
+
 	public Vertex(Integer name) {
 		this.label = name;
 	}
@@ -41,7 +50,7 @@ public class Vertex {
 	
 	@Override
 	public String toString() {
-		return "Vertex [label=" + label + ", incidentEdges=" + incidentEdges
+		return "Vertex [label=" + label + ", greedyScore=" + greedyScore
 				+ "]";
 	}
 
