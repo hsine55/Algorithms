@@ -25,4 +25,16 @@ public class Utils {
 		}
 		return result.toArray(new Integer[result.size()]);
 	}
+	
+	public static List<Long> readArrayList(String filePath) {
+		List<Long> result = null;
+		try(Stream<String> stream = Files.lines(Paths.get(filePath))) {
+			result = stream
+					.map(Long::valueOf)
+					.collect(Collectors.toList());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 }
